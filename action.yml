@@ -1,7 +1,9 @@
 name: "Cross Rust Action"
 description: "A github action for cross rust build."
 author: "neodyland"
-
+branding:
+  icon: "git-branch"
+  color: "green"
 inputs:
   rusttarget:
     description: "Rust target triple"
