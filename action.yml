@@ -28,6 +28,7 @@ runs:
     - uses: actions-rust-lang/setup-rust-toolchain@v1
     - uses: mlugg/setup-zig@v2
     - name: Run
+      shell: bash
       run: |
         export DIR="${{ inputs.dir }}"
         PATH_TO_CROSS=$(bun setup.js --rusttarget ${{ inputs.rusttarget }} --zigtarget ${{ inputs.zigtarget }} --dir ${{ inputs.dir }} --sh ${{ inputs.sh }})
