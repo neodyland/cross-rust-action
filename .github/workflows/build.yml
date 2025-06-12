@@ -22,13 +22,13 @@ jobs:
       - name: Create dist branch and push files
         run: |
           mkdir /tmp/assets-rust-cross
-          cp setup.js action.yml /tmp/assets-rust-cross
+          cp setup.js action.yml LICENSE /tmp/assets-rust-cross
           git config user.name "github-actions[bot]"
           git config user.email "action@github.com"
           git switch --orphan dist
           git reset --hard
           git clean -fdx
-          cp /tmp/assets-rust-cross/setup.js /tmp/assets-rust-cross/action.yml ./
+          cp /tmp/assets-rust-cross/* ./
           git add setup.js action.yml
           git commit -m "Update dist"
           git push -f origin HEAD:dist
