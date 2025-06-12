@@ -1,0 +1,32 @@
+name: Build and Push to dist
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies and build
+        run: |
+          bun install
+          bun run build
+      - name: Create dist branch and push files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "action@github.com"
+          git switch --orphan dist
+          git reset --hard
+          git clean -fdx
+          cp setup.js action.yml ./
+          git add setup.js action.yml
+          git commit -m "Update dist"
+          git push -f origin HEAD:dist
