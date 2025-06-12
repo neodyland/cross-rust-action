@@ -16,11 +16,15 @@ inputs:
   storedir:
     description: "Store directory"
     required: false
-    default: "./target/cross-rust"
+    default: "/tmp/cross-rust"
   cargo-build-args:
     description: "Arguments passed to cross-cargo-build"
     required: false
     default: ""
+  workdir:
+    description: "Working directory for cross-cargo-build"
+    required: false
+    default: "./"
 
 runs:
   using: "composite"
@@ -30,9 +34,12 @@ runs:
     - uses: oven-sh/setup-bun@v2
     - name: Run
       shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-        PATH_TO_CROSS=$(bun setup.js --rusttarget ${{ inputs.rusttarget }} --zigtarget ${{ inputs.zigtarget }} --dir ${{ inputs.storedir }} --sh ${{ inputs.sh }})
+        PATH_TO_CROSS=$(bun $GITHUB_ACTION_PATH/setup.js --rusttarget ${{ inputs.rusttarget }} --zigtarget ${{ inputs.zigtarget }} --dir ${{ inputs.storedir }} --sh ${{ inputs.sh }})
         if [ $? -eq 0 ]; then
+          cd ${{ inputs.workdir }}
           $PATH_TO_CROSS ${{ inputs.cargo-build-args }}
         else
           echo "$PATH_TO_CROSS"
