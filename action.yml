@@ -5,33 +5,18 @@ branding:
   icon: "git-branch"
   color: "green"
 inputs:
-  rusttarget:
-    description: "Rust target triple"
-    required: true
-  zigtarget:
-    description: "Zig target triple"
-    required: true
-  sh:
-    description: "Shell to execute commands"
-    required: false
-    default: "/bin/bash"
-  storedir:
-    description: "Store directory"
-    required: false
-    default: "/tmp/cross-rust"
   cargo-build-args:
     description: "Arguments passed to cross-cargo-build"
     required: false
     default: ""
-  workdir:
-    description: "Working directory for cross-cargo-build"
-    required: false
-    default: "./"
   toolchain:
     description: "Rust toolchain to use"
     required: false
     type: string
     default: "stable"
+  target:
+    description: "Rust target triple"
+    required: true
 
 runs:
   using: "composite"
@@ -39,20 +24,13 @@ runs:
     - uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         toolchain: ${{ inputs.toolchain }}
-        target: ${{ inputs.rusttarget }}
+        target: ${{ inputs.target }}
         components: rust-src
-    - uses: mlugg/setup-zig@v2
-    - uses: oven-sh/setup-bun@v2
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
     - name: Run
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-        PATH_TO_CROSS=$(bun $GITHUB_ACTION_PATH/setup.js --rusttarget ${{ inputs.rusttarget }} --zigtarget ${{ inputs.zigtarget }} --dir ${{ inputs.storedir }} --sh ${{ inputs.sh }})
-        if [ $? -eq 0 ]; then
-          cd ${{ inputs.workdir }}
-          $PATH_TO_CROSS ${{ inputs.cargo-build-args }}
-        else
-          echo "$PATH_TO_CROSS"
-          exit 1
-        fi
+        uvx cargo-zigbuild +${{ inputs.toolchain }} zigbuild --target ${{ inputs.target }} ${{ inputs.cargo-build-args }}
