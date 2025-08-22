@@ -22,9 +22,9 @@ async function main() {
                 type: "string",
                 default: "/bin/sh",
             },
-            nightly: {
-                type: "boolean",
-                default: false,
+            toolchain: {
+                type: "string",
+                default: "stable",
             },
         },
         strict: true,
@@ -54,7 +54,7 @@ ${zigPath} cc -target ${values.zigtarget} $@`;
     await $`chmod +x ${ccPath}`.quiet();
     const crossCargo = `#!${values.sh}
 export CC=${ccPath}
-${Bun.which("cargo")} ${values.nightly ? "+nightly " : ""}--config 'target.${values.rusttarget}.linker="${ccPath}"' build --target ${values.rusttarget} $@`;
+${Bun.which("cargo")} +${values.toolchain} --config 'target.${values.rusttarget}.linker="${ccPath}"' build --target ${values.rusttarget} $@`;
     console.log(crossCargo);
     const crossCargoPath = path.join(bin, "cross-cargo-build");
     await Bun.write(crossCargoPath, crossCargo);

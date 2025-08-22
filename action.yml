@@ -27,18 +27,18 @@ inputs:
     description: "Working directory for cross-cargo-build"
     required: false
     default: "./"
-  nightly:
-    description: "Will install nightly rust for you"
+  toolchain:
+    description: "Rust toolchain to use"
     required: false
-    type: boolean
-    default: false
+    type: string
+    default: "stable"
 
 runs:
   using: "composite"
   steps:
     - uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
-        toolchain: ${{ inputs.nightly ? 'nightly' : 'stable' }}
+        toolchain: ${{ inputs.toolchain }}
         target: ${{ inputs.rusttarget }}
         components: rust-src
     - uses: mlugg/setup-zig@v2
@@ -48,7 +48,7 @@ runs:
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-        PATH_TO_CROSS=$(bun $GITHUB_ACTION_PATH/setup.js --rusttarget ${{ inputs.rusttarget }} --zigtarget ${{ inputs.zigtarget }} --dir ${{ inputs.storedir }} --sh ${{ inputs.sh }} --nightly ${{ inputs.nightly }})
+        PATH_TO_CROSS=$(bun $GITHUB_ACTION_PATH/setup.js --rusttarget ${{ inputs.rusttarget }} --zigtarget ${{ inputs.zigtarget }} --dir ${{ inputs.storedir }} --sh ${{ inputs.sh }})
         if [ $? -eq 0 ]; then
           cd ${{ inputs.workdir }}
           $PATH_TO_CROSS ${{ inputs.cargo-build-args }}
