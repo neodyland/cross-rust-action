@@ -2,11 +2,11 @@
     "name": "cross-rust",
     "private": true,
     "devDependencies": {
-        "@biomejs/biome": "^1.9.4",
+        "@biomejs/biome": "2",
         "@types/bun": "latest"
     },
     "peerDependencies": {
-        "typescript": "^5"
+        "typescript": "^5.8.3"
     },
     "type": "module",
     "scripts": {

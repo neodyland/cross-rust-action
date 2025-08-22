@@ -23,6 +23,10 @@ async function main() {
                 type: "string",
                 default: "/bin/sh",
             },
+            nightly: {
+                type: "boolean",
+                default: false,
+            },
         },
         strict: true,
         allowPositionals: true,
@@ -56,7 +60,7 @@ ${zigPath} cc -target ${values.zigtarget} $@`;
         console.error(`Valid rusttargets are: ${rustTargets.join(", ")}`);
         return false;
     }
-    await maybeAddRustTarget(values.rusttarget);
+    await maybeAddRustTarget(values.rusttarget, values.nightly);
     const crossCargo = `#!${values.sh}
 export CC=${ccPath}
 ${Bun.which("cargo")} --config 'target.${values.rusttarget}.linker="${ccPath}"' build --target ${values.rusttarget} $@`;

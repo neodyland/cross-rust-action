@@ -23,9 +23,11 @@ export const [targets, installedTargets] = await Promise.all([
     extractInstalledRustTargets(),
 ]);
 
-export async function maybeAddRustTarget(target: string) {
-    if (installedTargets.includes(target)) {
-    } else {
+export async function maybeAddRustTarget(target: string, nightly: boolean) {
+    if (!installedTargets.includes(target)) {
         await $`rustup target add ${target}`.quiet();
+    }
+    if (nightly) {
+        await $` rustup component add rust-src --toolchain nightly-${target}`;
     }
 }
