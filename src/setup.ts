@@ -72,7 +72,7 @@ await $\`${zigPath} cc -target ${values.zigtarget} \${kept}\`;`;
     await $`chmod +x ${ccPath}`.quiet();
     const crossCargo = `#!${values.sh}
 export CC=${ccPath}
-${Bun.which("cargo")} +${values.toolchain} --config 'target.${values.rusttarget}.linker="${ccPath}"' build --target ${values.rusttarget} $@`;
+${Bun.which("cargo")} +${values.toolchain} --config 'target.${values.rusttarget}.linker="${ccPath}"' --config 'target.${values.rusttarget}.rustflags=["-C", "link-arg=-fuse-ld=${ccPath}"]' build --target ${values.rusttarget} $@`;
     const crossCargoPath = path.join(bin, "cross-cargo-build");
     await Bun.write(crossCargoPath, crossCargo);
     await $`chmod +x ${crossCargoPath}`.quiet();
