@@ -55,6 +55,8 @@ for (const a of args) {
     } else if (nextSkip) {
         nextSkip = false;
         continue;
+    } else if (a.startsWith("--target")) {
+        continue;
     }
     kept.push(a);
 }
