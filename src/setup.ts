@@ -60,7 +60,13 @@ ${zigPath} cc -target ${values.zigtarget} $@`;
         console.error(`Valid rusttargets are: ${rustTargets.join(", ")}`);
         return false;
     }
+    if (values.nightly) {
+        await $`rustup install nightly`;
+    }
     await maybeAddRustTarget(values.rusttarget, values.nightly);
+    if (values.nightly) {
+        await $`rustup default nightly`;
+    }
     const crossCargo = `#!${values.sh}
 export CC=${ccPath}
 ${Bun.which("cargo")} --config 'target.${values.rusttarget}.linker="${ccPath}"' build --target ${values.rusttarget} $@`;
