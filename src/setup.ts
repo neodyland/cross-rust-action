@@ -20,7 +20,7 @@ async function main() {
             },
             sh: {
                 type: "string",
-                default: "/bin/sh",
+                default: "/bin/bash",
             },
             toolchain: {
                 type: "string",
@@ -42,8 +42,24 @@ async function main() {
         console.error(`Valid zigtargets are: ${zigTargets.join(", ")}`);
         return false;
     }
-    const cc = `#!${values.sh}
-${zigPath} cc -target ${values.zigtarget} $@`;
+    const cc = `#!/usr/bin/env bun
+import { $ } from "bun";
+
+const args = process.argv.slice(2);
+const kept: string[] = [];
+let nextSkip = false;
+for (const a of args) {
+    if (a === "--target") {
+        nextSkip = true;
+        continue;
+    } else if (nextSkip) {
+        nextSkip = false;
+        continue;
+    }
+    kept.push(a);
+}
+
+await $\`${zigPath} cc -target ${values.zigtarget} \${kept.join(" ")}\`;`;
     const dir = path.resolve(values.dir);
     const bin = path.join(dir, "bin");
     if (!(await exists(bin))) {

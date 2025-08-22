@@ -14,7 +14,7 @@ inputs:
   sh:
     description: "Shell to execute commands"
     required: false
-    default: "/bin/sh"
+    default: "/bin/bash"
   storedir:
     description: "Store directory"
     required: false
