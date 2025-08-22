@@ -1,5 +1,4 @@
 import { targets as zigTargets, zigPath } from "./zig";
-import { targets as rustTargets, maybeAddRustTarget } from "./rust";
 import { parseArgs } from "node:util";
 import { mkdir, exists } from "node:fs/promises";
 import path from "node:path";
@@ -53,20 +52,6 @@ ${zigPath} cc -target ${values.zigtarget} $@`;
     const ccPath = path.join(bin, "cross-rust-cc");
     await Bun.write(ccPath, cc);
     await $`chmod +x ${ccPath}`.quiet();
-    if (!values.rusttarget) {
-        console.error(
-            "No rusttarget specified. Use --rusttarget to specify a rusttarget.",
-        );
-        console.error(`Valid rusttargets are: ${rustTargets.join(", ")}`);
-        return false;
-    }
-    if (values.nightly) {
-        await $`rustup install nightly`;
-    }
-    await maybeAddRustTarget(values.rusttarget, values.nightly);
-    if (values.nightly) {
-        await $`rustup default nightly`;
-    }
     const crossCargo = `#!${values.sh}
 export CC=${ccPath}
 ${Bun.which("cargo")} ${values.nightly ? "+nightly " : ""}--config 'target.${values.rusttarget}.linker="${ccPath}"' build --target ${values.rusttarget} $@`;
