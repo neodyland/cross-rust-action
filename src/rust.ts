@@ -18,6 +18,15 @@ async function extractRustTargets() {
     return targetsExtracted;
 }
 
+async function installRustup() {
+    const output = "install-rust-arandompath.sh";
+    await $`curl https://sh.rustup.rs -o ${output}`;
+    await $`sh ${output} -y`;
+    await $`rm ${output}`;
+}
+
+await installRustup();
+
 export const [targets, installedTargets] = await Promise.all([
     extractRustTargets(),
     extractInstalledRustTargets(),
