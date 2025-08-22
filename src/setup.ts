@@ -59,7 +59,7 @@ for (const a of args) {
     kept.push(a);
 }
 
-await $\`${zigPath} cc -target ${values.zigtarget} \${kept.join(" ")}\`;`;
+await $\`${zigPath} cc -target ${values.zigtarget} \${kept}\`;`;
     const dir = path.resolve(values.dir);
     const bin = path.join(dir, "bin");
     if (!(await exists(bin))) {
